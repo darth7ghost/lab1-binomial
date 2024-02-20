@@ -16,47 +16,111 @@
     <section class="s1">
         <div class="main-container">
             <div class="greeting-wrapper">
-                <h1>PRIMERA ENTREGA PROYECTO DE MODELOS DISCRETOS Y CONTINUOS</h1>
+                <h1>PROYECTO DE MODELOS DISCRETOS Y CONTINUOS</h1>
             </div>
-            <h3>PRÁCTICA DE LABORATORIO No. 1</h3>
-            <p></p>
+            <h3>¿Cómo funciona?</h3>
+            <p>El programa permite calcular la probabilidad de n valores de X aplicando la distribución binomial y toma en consideración si la población es infinita para el cálculo de las probabilidades.
+                También permite calcular la media y la desviación estándar para la población infinita.
+            </p>
+            <div class="s2">
+                <div class="left-column">
+                    <div class="intro-wrapper">
+                        <div class="nav-wrapper">
+                            <div class="dots-wrapper">
+                                <div id="dot-1" class="browser-dot"></div>
+                                <div id="dot-2" class="browser-dot"></div>
+                                <div id="dot-3" class="browser-dot"></div>
+                            </div>
+                            <ul id="navigation">
+                                <li><a href="#"></a></li>
+                            </ul>
+                        </div>
+                        <div class="main-content">
+                            <form id="formularioBinomial">
+                                <label for="nValoresX">Ingrese nValoresX (X):</label>
+                                <input type="number" id="nValoresX" name="nValoresX" required>
+                            
+                                <label for="probabilidadExito">Ingrese probabilidad de éxito (p) en decimales (ej: 0.5 equivale a 50%):</label>
+                                <input type="number" step="0.01" id="probabilidadExito" name="probabilidadExito" required>
+                            
+                                <label for="numeroEventos">Ingrese número de eventos (n):</label>
+                                <input type="number" id="numeroEventos" name="numeroEventos" required>
+                            
+                                <label for="poblacionTotal">Ingrese población total (o 0 si es infinita):</label>
+                                <input type="number" id="poblacionTotal" name="poblacionTotal" required>
 
-            <div class="intro-wrapper">
-                <div class="nav-wrapper">
-                    <div class="dots-wrapper">
-                        <div id="dot-1" class="browser-dot"></div>
-                        <div id="dot-2" class="browser-dot"></div>
-                        <div id="dot-3" class="browser-dot"></div>
+                                <label for="maxTolerable">Ingrese un porcentaje tolerable en decimales:</label>
+                                <input type="number" step="0.01" id="maxTolerable" name="maxTolerable" required>
+                            
+                                <button type="button" onclick="calcularDistribucionBinomial()">Calcular</button>
+                            </form>
+                        </div>
                     </div>
-                    <ul id="navigation">
-                        <li><a href="#">Ir al codigo fuente</a></li>
-                    </ul>
                 </div>
-                <div class="main-content">
-                    <h3>¿Cómo funciona?</h3>
-                    <p>El programa permite calcular la probabilidad de n valores de X aplicando la distribución binomial y toma en consideración si la población es infinita para el cálculo de las probabilidades.
-                        También permite calcular la media y la desviación estándar para la población infinita.
-                    </p>
-                    <form id="formularioBinomial">
-                        <label for="nValoresX">Ingrese nValoresX (X):</label>
-                        <input type="number" id="nValoresX" name="nValoresX" required>
-                    
-                        <label for="probabilidadExito">Ingrese probabilidad de éxito (p) en decimales (ej: 0.5 equivale a 50%):</label>
-                        <input type="number" step="0.01" id="probabilidadExito" name="probabilidadExito" required>
-                    
-                        <label for="numeroEventos">Ingrese número de eventos (n):</label>
-                        <input type="number" id="numeroEventos" name="numeroEventos" required>
-                    
-                        <label for="poblacionTotal">Ingrese población total (o 0 si es infinita):</label>
-                        <input type="number" id="poblacionTotal" name="poblacionTotal" required>
-                    
-                        <button type="button" onclick="calcularDistribucionBinomial()">Calcular</button>
-                    </form>
-                    <br>
-                    <h3 id="rtitle"></h3>
-                    <p id="resultado"></p>
-                    <h3 id="gtitle"></h3>
-                    <canvas id="probabilidadBinomialChart" width="400" height="400"></canvas>
+                <div class="right-column">
+                    <div class="intro-wrapper">
+                        <div class="nav-wrapper">
+                            <div class="dots-wrapper">
+                                <div id="dot-1" class="browser-dot"></div>
+                                <div id="dot-2" class="browser-dot"></div>
+                                <div id="dot-3" class="browser-dot"></div>
+                            </div>
+                            <ul id="navigation">
+                                <li><a href="#"></a></li>
+                            </ul>
+                        </div>
+                        <div class="main-content">
+                            <h3 id="rtitle"></h3>
+                            <p id="probabilidad"></p>
+                            <p id="probabilidadxmayor"></p>
+                            <p id="probabilidadxmin"></p>
+                            <p id="media"></p>
+                            <p id="factor"></p>
+                            <p id="desviacion"></p>
+                            <p id="sesgo"></p>
+                            <p id="valorsesgo"></p>
+                            <p id="curtosis"></p>
+                            <p id="valorcurtosis"></p>
+                            <p id="valorTolerable"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="s3">
+                <div class="left-column2">
+                    <div class="intro-wrapper">
+                        <div class="main-content2">
+                            <table id="tabla-probabilidad">
+                                <thead>
+                                    <tr>
+                                        <th>X</th>
+                                        <th>P(X)</th>
+                                        <th>Acumulada</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaBody">
+                                  <!-- Aquí se agregarán las filas dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="center-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content2">
+                            <h3 id="pxtitle"></h3>
+                            <canvas id="probabilidadBinomialChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content2">
+                            <h3 id="pacumuladatitle"></h3>
+                            <canvas id="probabilidadAcumuladaChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,7 +132,7 @@
         <p>&#127976; Universidad de San Carlos de Guatemala - CUNOR.</p>
         <p>&#128194; Para ver todos mis códigos fuente puedes dirigirte a mi repositorio de GitHub: <a target="_blank" href="https://github.com/darth7ghost"> @darth7ghost</a></p>
     </footer>
-    <script src="script.js"></script>
+    <script src="script2.js"></script>
 
 </body>
 </html>

@@ -104,7 +104,7 @@ function calcularProbabilidadBinomialInfinita(n, p, x) {
      * Calcula la probabilidad binomial para n eventos con probabilidad p de éxito en x eventos.
      */
     const q = 1 - p; // Probabilidad de fracaso
-    const probabilidad = comb(n, x) * Math.pow(p, x) * Math.pow(q, n - x);
+    const probabilidad = comb2(n, x) * Math.pow(p, x) * Math.pow(q, n - x);
     return probabilidad;
 }
 

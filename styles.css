@@ -16,9 +16,7 @@ html, body{
     scroll-behavior: smooth;
 }
 
-body * {
-    transition: 0.3s;
-}
+
 
 h1, h2, h3, h4, h5, h6, strong{
     color: var(--mainText);
@@ -61,6 +59,7 @@ button:hover {
 
 p{
     font-size: 18px;
+    margin: 0px;
 }
 
 a{
@@ -81,17 +80,76 @@ h6 { font-size: 16px;}
 
 canvas{
     background-color: var(--secondaryText);
+    border-radius: 5px;
     height: 0px;
 }
 
+#tabla-probabilidad {
+    font-family: 'Baloo Bhaijaan 2', cursive;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tabla-probabilidad td, #tabla-probabilidad th {
+    border: 1px solid var(--thirdColor);
+    padding: 0px 4px;
+}
+
+#tabla-probabilidad tr:nth-child(odd){background-color: #EDEDED;}
+
+#tabla-probabilidad tr:nth-child(even){background-color: #f2f2f2;}
+
+#tabla-probabilidad tr:hover {background-color: #bab7c1;}
+
+#tabla-probabilidad th {
+    text-align: left;
+    background-color: var(--borderColor);
+    color: white;
+}
+
 .s1{
-    background-color: var(--mainColor);
-    border-bottom: 1px solid var(--borderColor);
     overflow: auto;
 }
 
+.s2{
+    padding: 0px;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        'left-column right-column'
+    ;
+}
+
+.s3{
+    padding: 0px;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+        'left-column2 center-column right-column'
+    ;
+}
+
+.left-column {
+    grid-area: left-column;
+}
+
+.left-column2 {
+    overflow: auto;
+    grid-area: left-column2;
+}
+
+.center-column {
+    grid-area: center-column;
+}
+
+.right-column {
+    grid-area: right-column;
+}
+
 .main-container{
-    width: 1200px;
+    width: 90%;
     margin: 0 auto;
 }
 
@@ -111,7 +169,7 @@ canvas{
     -moz-box-shadow: -1px -1px 4px -1px rgba(0,0,0,0.75);
     box-shadow: -1px -1px 4px -1px rgba(0,0,0,0.75);
 
-    margin-bottom: 40px;
+    margin: 2%;
 }
 
 .nav-wrapper{
@@ -163,7 +221,11 @@ canvas{
 }
 
 .main-content{
-    padding: 50px;
+    padding: 30px;
+}
+
+.main-content2{
+    padding: 15px;
 }
 
 footer {
