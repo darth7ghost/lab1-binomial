@@ -18,6 +18,9 @@ function calcularDistribucionBinomial(){
     // Mostrar el resultado en el elemento con id 'resultado'
     document.getElementById('rtitle').innerText = "Resultado:";
     
+    /*
+    / PROBABILIDAD BINOMIAL FINITA, INFINITA Y POR SOLUCIÓN HIPERGEOMÉTRICA
+    */
     if(isNaN(probabilidadExito)){
         if(isNaN(valorK)){
             alert('Por favor, ingrese un valor en población objetivo para realizar la solución hipergeométrica.');
@@ -28,7 +31,7 @@ function calcularDistribucionBinomial(){
                 solucionHipergeometrica(nValoresX, numeroEventos, poblacionTotal, valorK);
             } else {
                 alert('La población objetivo no cumple con los requisitos para resolverse por hipergeométrica, se resolverá por probabilidad binomial en su caso.');
-                const probabilidad = probabilidadHipergeometrica(poblacionTotal, valorK, numeroEventos, nValoresX);
+                const probabilidad = valorK / poblacionTotal;
                 solucionBinomialFinita(nValoresX, probabilidad, numeroEventos, poblacionTotal, maxTolerable, valorK);
             }
         }
@@ -41,6 +44,14 @@ function calcularDistribucionBinomial(){
         } else {
             solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
         }
+    }
+
+    /*
+    / CÁLCULO DE POISSON
+    */
+    if(!isNaN(probabilidadExito) && probabilidadExito <= 0.10){
+        const media = numeroEventos * probabilidadExito;
+        distribucionPoisson(media, nValoresX);
     }
 }
 
@@ -111,7 +122,7 @@ function existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxT
     const porcentaje = [];
     const probabilidadXmin = 1 - probabilidad;
     document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
-    document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
+    document.getElementById('pxtitle').innerText = "Probabilidad P(X):";
     document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
     //Tabla para probabilidad de P segun el numero de valores de x.
     const resultados = calcularProbabilidadesBinomialesConX(numeroEventos, probabilidadExito, nValoresX);
@@ -126,6 +137,7 @@ function existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxT
     }
     //Tabla de probabilidades
     document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
+    document.getElementById('tbtitle').innerText = "Tabla de probabilidad acumulada:";
     tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje);
     //Grafica de probabilidad acumulada
     graficaProbabilidadAcumulada(nValoresX, probabilidadAcumulada);
@@ -151,7 +163,7 @@ function noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable)
     document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidad.toFixed(4)}`;
     const probabilidadXmin = 1 - probabilidad;
     document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
-    document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
+    document.getElementById('pxtitle').innerText = "Probabilidad P(X):";
     document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
     //Tabla para probabilidad de P segun el numero de eventos.
     const resultados = calcularProbabilidadesBinomialesSinX(numeroEventos, probabilidadExito);
@@ -440,4 +452,86 @@ function reiniciarValores(){
     document.getElementById('valorcurtosis').append("");
     document.getElementById('valorTolerable').append("");
     document.getElementById('avisoK').append("");
+}
+
+
+/*
+/ PROBABILIDAD DE POISSON
+*/
+function calcularPoisson(media, k) {
+    // Calcular e^(-λ)
+    const parte1 = Math.exp(-media);
+    
+    // Calcular λ^k / k!
+    const parte2 = Math.pow(media, k) / factorial(k);
+
+    // Calcular la probabilidad de Poisson
+    const probabilidad = parte1 * parte2;
+
+    return probabilidad;
+}
+
+// Función para calcular el factorial de un número
+function factorial(n) {
+    if (n === 0 || n === 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+//Lista de valores de probabilidad de Poisson segun numero de exitos
+function distribucionPoisson(media, k){
+    const listaPoisson = [];
+    for (let x = 0; x <= k; x++) {
+        listaPoisson.push(calcularPoisson(media, x));
+    }
+    console.log(listaPoisson);
+    tablaPoisson(listaPoisson);
+    graficaPoisson(listaPoisson, k);
+}
+
+//Tabla de Poisson
+function tablaPoisson(listaPoisson){
+    document.getElementById('tptitle').innerText = "Tabla de distribución de Poisson:";
+    const tablaPoissonBody = document.getElementById('tablaPoissonBody');
+    // Recorre los arrays y agrega filas a la tabla
+    for (let i = 0; i < listaPoisson.length; i++) {
+        const fila = document.createElement('tr');
+        // Añade la celda de índice
+        const celdaIndice = document.createElement('td');
+        celdaIndice.textContent = i;
+        fila.appendChild(celdaIndice);
+        // Añade la celda de array1
+        const celdaArray1 = document.createElement('td');
+        celdaArray1.textContent = listaPoisson[i];
+        fila.appendChild(celdaArray1);
+        // Agrega la fila a la tabla
+        tablaPoissonBody.appendChild(fila);
+    }
+}
+
+function graficaPoisson(listaPoisson, nValoresX){
+    document.getElementById('ppoissontitle').innerText = "Gráfica de distribución de Poisson:";
+    const ctx = document.getElementById('distribucionPoissonChart').getContext('2d');
+    const distribucionPoissonChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Array.from({ length: nValoresX + 1 }, (_, i) => i), // Etiquetas para cada valor de X
+            datasets: [{
+                label: 'Distribución de Poisson',
+                data: listaPoisson,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
+                borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
+                borderWidth: 1, // Ancho del borde de las barras
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 }

@@ -72,7 +72,7 @@ ul{
 }
 
 h1 { font-size: 56px;}
-h2 { font-size: 36px;}
+h2 { font-size: 36px; margin-bottom: 0;}
 h3 { font-size: 28px; margin: 0;}
 h4 { font-size: 24px;}
 h5 { font-size: 20px;}
@@ -102,6 +102,29 @@ canvas{
 #tabla-probabilidad tr:hover {background-color: #bab7c1;}
 
 #tabla-probabilidad th {
+    text-align: left;
+    background-color: var(--borderColor);
+    color: white;
+}
+
+#tabla-poisson {
+    font-family: 'Baloo Bhaijaan 2', cursive;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tabla-poisson td, #tabla-poisson th {
+    border: 1px solid var(--thirdColor);
+    padding: 0px 4px;
+}
+
+#tabla-poisson tr:nth-child(odd){background-color: #EDEDED;}
+
+#tabla-poisson tr:nth-child(even){background-color: #f2f2f2;}
+
+#tabla-poisson tr:hover {background-color: #bab7c1;}
+
+#tabla-poisson th {
     text-align: left;
     background-color: var(--borderColor);
     color: white;

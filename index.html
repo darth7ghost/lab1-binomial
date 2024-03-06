@@ -96,10 +96,14 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- PROBABILIDAD BINOMIAL E HIPERGEOMETRICA -->
+            <h2>Cálculo de probabilidades</h2>
             <div class="s3">
                 <div class="left-column2">
                     <div class="intro-wrapper">
                         <div class="main-content2">
+                            <h3 id="tbtitle"></h3>
                             <table id="tabla-probabilidad">
                                 <thead>
                                     <tr>
@@ -129,6 +133,37 @@
                         <div class="main-content2">
                             <h3 id="pacumuladatitle"></h3>
                             <canvas id="probabilidadAcumuladaChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DISTRIBUCION DE POISSON -->
+            <h2>Cálculo de distribución de Poisson</h2>
+            <div class="s2">
+                <div class="left-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content">
+                            <h3 id="tptitle"></h3>
+                            <table id="tabla-poisson">
+                                <thead>
+                                    <tr>
+                                        <th>X</th>
+                                        <th>P(X)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaPoissonBody">
+                                  <!-- Aquí se agregarán las filas dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content">
+                            <h3 id="ppoissontitle"></h3>
+                                <canvas id="distribucionPoissonChart" width="400" height="400"></canvas>
                         </div>
                     </div>
                 </div>
