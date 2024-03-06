@@ -4,29 +4,51 @@ function calcularDistribucionBinomial() {
     const probabilidadExito = parseFloat(document.getElementById('probabilidadExito').value);
     const numeroEventos = parseInt(document.getElementById('numeroEventos').value);
     const poblacionTotal = parseInt(document.getElementById('poblacionTotal').value);
+    const maxTolerable = parseFloat(document.getElementById('maxTolerable').value);
+    const valorK = parseInt(document.getElementById('valorK').value);
 
     // Verificar si los valores son válidos
-    if (isNaN(nValoresX) || isNaN(probabilidadExito) || isNaN(numeroEventos) || isNaN(poblacionTotal)) {
-        alert('Por favor, ingrese valores numéricos válidos.');
+    if (isNaN(nValoresX) || isNaN(numeroEventos) || isNaN(poblacionTotal)) {
+        alert('Por favor, ingrese datos obligatorios (*).');
         return;
     }
 
-    // Lógica para evaluar si la población es infinita
-    const esPoblacionInfinita = evaluarPoblacionInfinita(numeroEventos, poblacionTotal);
+    // Mostrar el resultado en el elemento con id 'resultado'
+    document.getElementById('rtitle').innerText = "Resultado:";
+    
+    if(isNaN(probabilidadExito)){
+        if(isNaN(valorK)){
+            alert('Por favor, ingrese un valor en población objetivo para realizar la solución hipergeométrica.');
+            return;
+        } else {
+            const porcentaje20 = compararMuestraYPoblacion(numeroEventos, poblacionTotal);
+            if(porcentaje20 === true){
+                solucionHipergeometrica(nValoresX, numeroEventos, poblacionTotal, valorK);
+            } else {
+                alert('La población objetivo no cumple con los requisitos para resolverse por hipergeométrica, se resolverá por probabilidad binomial en su caso.');
+                solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+            }
+        }
+    } else {
+        //Solucion probabilidad binomial
+        // Lógica para evaluar si la población es infinita
+        const esPoblacionInfinita = evaluarPoblacionInfinita(numeroEventos, poblacionTotal);
+        if (esPoblacionInfinita) {
+            solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+        } else {
+            solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+        }
+    }
+
+    
 
     // Lógica para calcular la probabilidad, media y desviación estándar
     if (esPoblacionInfinita) {
         const probabilidad = calcularProbabilidadBinomialInfinita(numeroEventos, probabilidadExito, nValoresX);
         const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
         const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
-        const sesgo = calcularSesgo(numeroEventos, probabilidadExito);
-        const valorSesgo = evaluarSesgo(sesgo);
-        const curtosis = calcularCurtosis(numeroEventos, probabilidadExito);
-        const valorCurtosis = evaluarCurtosis(curtosis);
         const resultados = calcularProbabilidadesBinomialesInfinita(numeroEventos, probabilidadExito, nValoresX);
 
-        // Mostrar el resultado en el elemento con id 'resultado'
-        document.getElementById('rtitle').innerText = "Resultado:";
         document.getElementById('resultado').innerText = `-Probabilidad: ${probabilidad.toFixed(4)}
         -Media: ${media.toFixed(4)}
         -Desviación Estándar: ${desviacionEstandar.toFixed(4)}
@@ -96,6 +118,132 @@ function calcularDistribucionBinomial() {
                 }
             }
         });
+    }
+}
+
+function solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK){
+    const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
+    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
+    const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
+    document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
+    const factor = factorCorreccion(numeroEventos, poblacionTotal);
+    document.getElementById('factor').innerText = `Factor de correción: ${factor.toFixed(4)}`;
+    const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
+    let desviacionEstandarFinita = factor * desviacionEstandar;
+    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandarFinita.toFixed(4)}`;
+    sesgoCurtosis(numeroEventos, probabilidadExito);
+    if(nValoresX === 0){
+        noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable);
+    } else {
+        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable);
+    }
+}
+
+function solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK){
+    const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
+    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
+    const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
+    document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
+    const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
+    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandar.toFixed(4)}`;
+    sesgoCurtosis(numeroEventos, probabilidadExito);
+    if(nValoresX === 0){
+        noExisteX(probabilidad, probabilidadExito, numeroEventos);
+    } else {
+        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX);
+    }
+}
+
+function solucionHipergeometrica(nValoresX, numeroEventos, poblacionTotal, valorK){
+
+}
+
+function sesgoCurtosis(numeroEventos, probabilidadExito){
+    const sesgo = calcularSesgo(numeroEventos, probabilidadExito);
+    document.getElementById('sesgo').innerText = `Sesgo: ${sesgo.toFixed(4)}`;
+    const valorSesgo = evaluarSesgo(sesgo);
+    document.getElementById('valorsesgo').innerText = `➥ Tipo de sesgo: ${valorSesgo}`;
+    const curtosis = calcularCurtosis(numeroEventos, probabilidadExito);
+    document.getElementById('curtosis').innerText = `Curtosis: ${curtosis.toFixed(4)}`;
+    const valorCurtosis = evaluarCurtosis(curtosis);
+    document.getElementById('valorcurtosis').innerText = `➥ Tipo de curtósis: ${valorCurtosis}`;
+}
+
+function existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable){
+    const probabilidadXmin = 1 - probabilidad;
+    document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
+    document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
+    document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
+    //Tabla para probabilidad de P segun el numero de valores de x.
+    const resultados = calcularProbabilidadesBinomialesConX(numeroEventos, probabilidadExito, nValoresX);
+    graficaBinomialConX(nValoresX, resultados);
+    //Calculo de probabilidad de x maximo, x acumulada y el porcentaje
+    let probabilidadXmayor = 0;
+    for (var i = 0; i < resultados.length; i+=1) {
+        probabilidadXmayor = probabilidadXmayor + resultados[i];
+        let porcentajeTemp = probabilidadXmayor * 100;
+        probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
+        porcentaje.push(porcentajeTemp.toFixed(2));
+    }
+    //Tabla de probabilidades
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
+    tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje);
+    //Grafica de probabilidad acumulada
+    graficaProbabilidadAcumulada(nValoresX, probabilidadAcumulada);
+
+    let indiceSolucion = 0;
+    let indicadorSolucion = 0;
+    if(maxTolerable > 0){
+        for (let x = 0; x <= probabilidadAcumulada.length; x++) {
+            if(probabilidadAcumulada[x] <= maxTolerable && indicadorSolucion != 1){
+                indiceSolucion = x;
+                console.log(indiceSolucion);
+            } else {
+                indicadorSolucion = 1;
+            }
+        }
+        document.getElementById('valorTolerable').innerText = `Para un porcentaje tolerable de [${maxTolerable*100}%], se necesita un máximo de [${indiceSolucion}] unidades en muestra.`;
+    }
+}
+
+function noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable){
+    const probabilidadAcumulada = [];
+    const porcentaje = [];
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidad.toFixed(4)}`;
+    const probabilidadXmin = 1 - probabilidad;
+    document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
+    document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
+    document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
+    //Tabla para probabilidad de P segun el numero de eventos.
+    const resultados = calcularProbabilidadesBinomialesSinX(numeroEventos, probabilidadExito);
+    graficaBinomialSinX(numeroEventos, resultados);
+    //Calculo de probabilidad de x acumulada y el porcentaje
+    let probabilidadXmayor = 0;
+    for (var i = 0; i < resultados.length; i+=1) {
+        probabilidadXmayor = probabilidadXmayor + resultados[i];
+        let porcentajeTemp = probabilidadXmayor * 100;
+        probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
+        porcentaje.push(porcentajeTemp.toFixed(2));
+    }
+    //Tabla de probabilidades
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
+    tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje);
+    
+    //Grafica de probabilidad acumulada
+    graficaProbabilidadAcumulada(numeroEventos, probabilidadAcumulada);
+
+    let indiceSolucion = 0;
+    let indicadorSolucion = 0;
+    if(maxTolerable > 0){
+        for (let x = 0; x <= probabilidadAcumulada.length; x++) {
+            if(probabilidadAcumulada[x] <= maxTolerable && indicadorSolucion != 1){
+                indiceSolucion = x;
+                console.log(indiceSolucion);
+            } else {
+                indicadorSolucion = 1;
+            }
+        }
+        document.getElementById('valorTolerable').innerText = `Para un porcentaje tolerable de [${maxTolerable*100}%], se necesita un máximo de [${indiceSolucion}] unidades en muestra.`;
     }
 }
 

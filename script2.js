@@ -5,32 +5,97 @@ function calcularDistribucionBinomial(){
     const numeroEventos = parseInt(document.getElementById('numeroEventos').value);
     const poblacionTotal = parseInt(document.getElementById('poblacionTotal').value);
     const maxTolerable = parseFloat(document.getElementById('maxTolerable').value);
+    const valorK = parseInt(document.getElementById('valorK').value);
+
+    reiniciarValores();
 
     // Verificar si los valores son válidos
-    if (isNaN(nValoresX) || isNaN(probabilidadExito) || isNaN(numeroEventos) || isNaN(poblacionTotal)) {
-        alert('Por favor, ingrese valores numéricos válidos.');
+    if (isNaN(nValoresX) || isNaN(numeroEventos) || isNaN(poblacionTotal)) {
+        alert('Por favor, ingrese datos obligatorios (*).');
         return;
     }
+
     // Mostrar el resultado en el elemento con id 'resultado'
     document.getElementById('rtitle').innerText = "Resultado:";
+    
+    if(isNaN(probabilidadExito)){
+        if(isNaN(valorK)){
+            alert('Por favor, ingrese un valor en población objetivo para realizar la solución hipergeométrica.');
+            return;
+        } else {
+            const porcentaje20 = compararMuestraYPoblacion(numeroEventos, poblacionTotal);
+            if(porcentaje20 === true){
+                solucionHipergeometrica(nValoresX, numeroEventos, poblacionTotal, valorK);
+            } else {
+                alert('La población objetivo no cumple con los requisitos para resolverse por hipergeométrica, se resolverá por probabilidad binomial en su caso.');
+                const probabilidad = probabilidadHipergeometrica(poblacionTotal, valorK, numeroEventos, nValoresX);
+                solucionBinomialFinita(nValoresX, probabilidad, numeroEventos, poblacionTotal, maxTolerable, valorK);
+            }
+        }
+    } else {
+        //Solucion probabilidad binomial
+        // Lógica para evaluar si la población es infinita
+        const esPoblacionInfinita = evaluarPoblacionInfinita(numeroEventos, poblacionTotal);
+        if (esPoblacionInfinita) {
+            solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+        } else {
+            solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+        }
+    }
+}
 
+function solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK){
     const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
     document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
     const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
     document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
-    
-    // Lógica para evaluar si la población es infinita
-    const esPoblacionInfinita = evaluarPoblacionInfinita(numeroEventos, poblacionTotal);
-    if (esPoblacionInfinita) {
-        const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
-        document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandar.toFixed(4)}`;
+    const factor = factorCorreccion(numeroEventos, poblacionTotal);
+    document.getElementById('factor').innerText = `Factor de correción: ${factor.toFixed(4)}`;
+    const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
+    let desviacionEstandarFinita = factor * desviacionEstandar;
+    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandarFinita.toFixed(4)}`;
+    sesgoCurtosis(numeroEventos, probabilidadExito);
+    if(nValoresX === 0){
+        noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable);
     } else {
-        const factor = factorCorreccion(numeroEventos, poblacionTotal);
-        document.getElementById('factor').innerText = `Factor de correción: ${factor.toFixed(4)}`;
-        const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
-        let desviacionEstandarFinita = factor * desviacionEstandar;
-        document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandarFinita.toFixed(4)}`;
+        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable);
     }
+}
+
+function solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK){
+    const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
+    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
+    const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
+    document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
+    const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
+    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandar.toFixed(4)}`;
+    sesgoCurtosis(numeroEventos, probabilidadExito);
+    if(nValoresX === 0){
+        noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable);
+    } else {
+        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable);
+    }
+}
+
+function solucionHipergeometrica(nValoresX, numeroEventos, poblacionTotal, valorK){
+    const probabilidad = probabilidadHipergeometrica(poblacionTotal, valorK, numeroEventos, nValoresX);
+    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
+    const media = mediaValorK(numeroEventos, valorK, poblacionTotal);
+    document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
+    const factor = factorCorreccion(numeroEventos, poblacionTotal);
+    document.getElementById('factor').innerText = `Factor de correción: ${factor.toFixed(4)}`;
+    const desviacionEstandar = desviacionEstandarValorK(numeroEventos, valorK, poblacionTotal);
+    let desviacionEstandarFinita = factor * desviacionEstandar;
+    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandarFinita.toFixed(4)}`;
+    sesgoCurtosis(numeroEventos, probabilidad);
+    if(nValoresX === 0){
+        noExisteX(probabilidad, probabilidad, numeroEventos, maxTolerable);
+    } else {
+        existeX(probabilidad, probabilidad, numeroEventos, nValoresX, maxTolerable);
+    }
+}
+
+function sesgoCurtosis(numeroEventos, probabilidadExito){
     const sesgo = calcularSesgo(numeroEventos, probabilidadExito);
     document.getElementById('sesgo').innerText = `Sesgo: ${sesgo.toFixed(4)}`;
     const valorSesgo = evaluarSesgo(sesgo);
@@ -39,198 +104,72 @@ function calcularDistribucionBinomial(){
     document.getElementById('curtosis').innerText = `Curtosis: ${curtosis.toFixed(4)}`;
     const valorCurtosis = evaluarCurtosis(curtosis);
     document.getElementById('valorcurtosis').innerText = `➥ Tipo de curtósis: ${valorCurtosis}`;
+}
 
+function existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable){
     const probabilidadAcumulada = [];
     const porcentaje = [];
-
-    if(nValoresX === 0){
-        document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidad.toFixed(4)}`;
-        const probabilidadXmin = 1 - probabilidad;
-        document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
-        document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
-        document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
-        //Tabla para probabilidad de P segun el numero de eventos.
-        const resultados = calcularProbabilidadesBinomialesSinX(numeroEventos, probabilidadExito);
-        const ctx = document.getElementById('probabilidadBinomialChart').getContext('2d');
-        const probabilidadBinomialChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Array.from({ length: numeroEventos + 1 }, (_, i) => i),
-                datasets: [{
-                    label: 'Probabilidad Binomial',
-                    data: resultados,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        //Calculo de probabilidad de x acumulada y el porcentaje
-        let probabilidadXmayor = 0;
-        for (var i = 0; i < resultados.length; i+=1) {
-            probabilidadXmayor = probabilidadXmayor + resultados[i];
-            let porcentajeTemp = probabilidadXmayor * 100;
-            probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
-            porcentaje.push(porcentajeTemp.toFixed(2));
-        }
-        //Tabla de probabilidades
-        document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
-        const tablaBody = document.getElementById('tablaBody');
-        // Asegúrate de que ambos arrays tengan la misma longitud
-        if (resultados.length === probabilidadAcumulada.length) {
-            // Recorre los arrays y agrega filas a la tabla
-            for (let i = 0; i < resultados.length; i++) {
-                const fila = document.createElement('tr');
-
-                // Añade la celda de índice
-                const celdaIndice = document.createElement('td');
-                celdaIndice.textContent = i;
-                fila.appendChild(celdaIndice);
-
-                // Añade la celda de array1
-                const celdaArray1 = document.createElement('td');
-                celdaArray1.textContent = resultados[i];
-                fila.appendChild(celdaArray1);
-
-                // Añade la celda de array2
-                const celdaArray2 = document.createElement('td');
-                celdaArray2.textContent = probabilidadAcumulada[i];
-                fila.appendChild(celdaArray2);
-
-                // Añade la celda de porcentaje
-                const celdaArray3 = document.createElement('td');
-                celdaArray3.textContent = porcentaje[i];
-                fila.appendChild(celdaArray3);
-
-                // Agrega la fila a la tabla
-                tablaBody.appendChild(fila);
-            }
-        } else {
-            console.error('Los arrays no tienen la misma longitud');
-        }
-        //Grafica de probabilidad acumulada
-        const ctx2 = document.getElementById('probabilidadAcumuladaChart').getContext('2d');
-        const probabilidadAcumuladaChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: Array.from({ length: numeroEventos + 1 }, (_, i) => i), // Etiquetas para cada valor de X
-                datasets: [{
-                    label: 'Probabilidad Binomial',
-                    data: probabilidadAcumulada,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
-                    borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
-                    borderWidth: 1, // Ancho del borde de las barras
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    } else {
-        const probabilidadXmin = 1 - probabilidad;
-        document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
-        document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
-        document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
-        //Tabla para probabilidad de P segun el numero de valores de x.
-        const resultados = calcularProbabilidadesBinomialesConX(numeroEventos, probabilidadExito, nValoresX);
-        const ctx = document.getElementById('probabilidadBinomialChart').getContext('2d');
-        const probabilidadBinomialChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Array.from({ length: nValoresX + 1 }, (_, i) => i), // Etiquetas para cada valor de X
-                datasets: [{
-                    label: 'Probabilidad Binomial',
-                    data: resultados,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
-                    borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
-                    borderWidth: 1, // Ancho del borde de las barras
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        //Calculo de probabilidad de x maximo, x acumulada y el porcentaje
-        let probabilidadXmayor = 0;
-        for (var i = 0; i < resultados.length; i+=1) {
-            probabilidadXmayor = probabilidadXmayor + resultados[i];
-            let porcentajeTemp = probabilidadXmayor * 100;
-            probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
-            porcentaje.push(porcentajeTemp.toFixed(2));
-        }
-        //Tabla de probabilidades
-        document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
-        const tablaBody = document.getElementById('tablaBody');
-        // Asegúrate de que ambos arrays tengan la misma longitud
-        if (resultados.length === probabilidadAcumulada.length) {
-            // Recorre los arrays y agrega filas a la tabla
-            for (let i = 0; i < resultados.length; i++) {
-                const fila = document.createElement('tr');
-
-                // Añade la celda de índice
-                const celdaIndice = document.createElement('td');
-                celdaIndice.textContent = i;
-                fila.appendChild(celdaIndice);
-
-                // Añade la celda de P(X)
-                const celdaArray1 = document.createElement('td');
-                celdaArray1.textContent = resultados[i];
-                fila.appendChild(celdaArray1);
-
-                // Añade la celda de Probabilidad Acumulada
-                const celdaArray2 = document.createElement('td');
-                celdaArray2.textContent = probabilidadAcumulada[i];
-                fila.appendChild(celdaArray2);
-
-                // Añade la celda de porcentaje
-                const celdaArray3 = document.createElement('td');
-                celdaArray3.textContent = porcentaje[i];
-                fila.appendChild(celdaArray3);
-
-                // Agrega la fila a la tabla
-                tablaBody.appendChild(fila);
-            }
-        } else {
-            console.error('Los arrays no tienen la misma longitud');
-        }
-        //Grafica de probabilidad acumulada
-        const ctx2 = document.getElementById('probabilidadAcumuladaChart').getContext('2d');
-        const probabilidadAcumuladaChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: Array.from({ length: nValoresX + 1 }, (_, i) => i), // Etiquetas para cada valor de X
-                datasets: [{
-                    label: 'Probabilidad Binomial',
-                    data: probabilidadAcumulada,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
-                    borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
-                    borderWidth: 1, // Ancho del borde de las barras
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+    const probabilidadXmin = 1 - probabilidad;
+    document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
+    document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
+    document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
+    //Tabla para probabilidad de P segun el numero de valores de x.
+    const resultados = calcularProbabilidadesBinomialesConX(numeroEventos, probabilidadExito, nValoresX);
+    graficaBinomialConX(nValoresX, resultados);
+    //Calculo de probabilidad de x maximo, x acumulada y el porcentaje
+    let probabilidadXmayor = 0;
+    for (var i = 0; i < resultados.length; i+=1) {
+        probabilidadXmayor = probabilidadXmayor + resultados[i];
+        let porcentajeTemp = probabilidadXmayor * 100;
+        probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
+        porcentaje.push(porcentajeTemp.toFixed(2));
     }
+    //Tabla de probabilidades
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
+    tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje);
+    //Grafica de probabilidad acumulada
+    graficaProbabilidadAcumulada(nValoresX, probabilidadAcumulada);
+
+    let indiceSolucion = 0;
+    let indicadorSolucion = 0;
+    if(maxTolerable > 0){
+        for (let x = 0; x <= probabilidadAcumulada.length; x++) {
+            if(probabilidadAcumulada[x] <= maxTolerable && indicadorSolucion != 1){
+                indiceSolucion = x;
+                console.log(indiceSolucion);
+            } else {
+                indicadorSolucion = 1;
+            }
+        }
+        document.getElementById('valorTolerable').innerText = `Para un porcentaje tolerable de [${maxTolerable*100}%], se necesita un máximo de [${indiceSolucion}] unidades en muestra.`;
+    }
+}
+
+function noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable){
+    const probabilidadAcumulada = [];
+    const porcentaje = [];
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidad.toFixed(4)}`;
+    const probabilidadXmin = 1 - probabilidad;
+    document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
+    document.getElementById('pxtitle').innerText = "Probabilidad binomial P(X):";
+    document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
+    //Tabla para probabilidad de P segun el numero de eventos.
+    const resultados = calcularProbabilidadesBinomialesSinX(numeroEventos, probabilidadExito);
+    graficaBinomialSinX(numeroEventos, resultados);
+    //Calculo de probabilidad de x acumulada y el porcentaje
+    let probabilidadXmayor = 0;
+    for (var i = 0; i < resultados.length; i+=1) {
+        probabilidadXmayor = probabilidadXmayor + resultados[i];
+        let porcentajeTemp = probabilidadXmayor * 100;
+        probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
+        porcentaje.push(porcentajeTemp.toFixed(2));
+    }
+    //Tabla de probabilidades
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
+    tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje);
+    
+    //Grafica de probabilidad acumulada
+    graficaProbabilidadAcumulada(numeroEventos, probabilidadAcumulada);
 
     let indiceSolucion = 0;
     let indicadorSolucion = 0;
@@ -270,27 +209,37 @@ function calcularProbabilidadesBinomialesSinX(numeroEventos, p) {
     return resultados;
 }
 
+function probabilidadHipergeometrica(poblacionTotal, valorK, numeroEventos, nValoresX) {
+    // Función para calcular el coeficiente binomial (n choose k)
+    function coeficienteBinomial(n, k) {
+        if (k === 0) return 1; // Caso base
+        if (k > n / 2) return coeficienteBinomial(n, n - k); // Optimización
+        let coeficiente = 1;
+        for (let i = 0; i < k; i++) {
+            coeficiente *= (n - i) / (i + 1);
+        }
+        return coeficiente;
+    }
+
+    // Calcular la probabilidad hipergeométrica
+    const numerador = coeficienteBinomial(valorK, nValoresX) * coeficienteBinomial(poblacionTotal - valorK, numeroEventos - nValoresX);
+    const denominador = coeficienteBinomial(poblacionTotal, numeroEventos);
+
+    return numerador / denominador;
+}
+
 function calcularMediaBinomial(n, p) {
-    /**
-     * Calcula la media de la distribución binomial para población infinita.
-     */
     const media = n * p;
     return media;
 }
 
 function calcularDesviacionEstandarBinomial(n, p) {
-    /**
-     * Calcula la desviación estándar de la distribución binomial para población infinita.
-     */
     const q = 1 - p;
     const desviacionEstandar = Math.sqrt(n * p * q);
     return desviacionEstandar;
 }
 
 function evaluarPoblacionInfinita(n, N) {
-    /**
-     * Evalúa si la población es infinita basándose en la proporción de la muestra con respecto a la población.
-     */
     const proporcionMuestra = n / N;
     if (proporcionMuestra <= 0.05 || N === 0) {
         return true; // Población infinita
@@ -353,4 +302,142 @@ function evaluarCurtosis(curtosis){
         valor = 'curva leptocúrtica.';
     }
     return valor;
+}
+
+function graficaBinomialSinX(numeroEventos, resultados){
+	const ctx = document.getElementById('probabilidadBinomialChart').getContext('2d');
+    const probabilidadBinomialChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Array.from({ length: numeroEventos + 1 }, (_, i) => i),
+            datasets: [{
+                label: 'Probabilidad Binomial',
+                data: resultados,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function graficaBinomialConX(nValoresX, resultados){
+    const ctx = document.getElementById('probabilidadBinomialChart').getContext('2d');
+    const probabilidadBinomialChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Array.from({ length: nValoresX + 1 }, (_, i) => i), // Etiquetas para cada valor de X
+            datasets: [{
+                label: 'Probabilidad Binomial',
+                data: resultados,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
+                borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
+                borderWidth: 1, // Ancho del borde de las barras
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje){
+    const tablaBody = document.getElementById('tablaBody');
+    if (resultados.length === probabilidadAcumulada.length) {
+        // Recorre los arrays y agrega filas a la tabla
+        for (let i = 0; i < resultados.length; i++) {
+            const fila = document.createElement('tr');
+            // Añade la celda de índice
+            const celdaIndice = document.createElement('td');
+            celdaIndice.textContent = i;
+            fila.appendChild(celdaIndice);
+            // Añade la celda de array1
+            const celdaArray1 = document.createElement('td');
+            celdaArray1.textContent = resultados[i];
+            fila.appendChild(celdaArray1);
+            // Añade la celda de array2
+            const celdaArray2 = document.createElement('td');
+            celdaArray2.textContent = probabilidadAcumulada[i];
+            fila.appendChild(celdaArray2);
+            // Añade la celda de porcentaje
+            const celdaArray3 = document.createElement('td');
+            celdaArray3.textContent = porcentaje[i];
+            fila.appendChild(celdaArray3);
+            // Agrega la fila a la tabla
+            tablaBody.appendChild(fila);
+        }
+    } else {
+        console.error('Los arrays no tienen la misma longitud');
+    }
+}
+
+function graficaProbabilidadAcumulada(numeroEventos, probabilidadAcumulada){
+    const ctx2 = document.getElementById('probabilidadAcumuladaChart').getContext('2d');
+    const probabilidadAcumuladaChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: Array.from({ length: numeroEventos + 1 }, (_, i) => i), // Etiquetas para cada valor de X
+            datasets: [{
+                label: 'Probabilidad Binomial',
+                data: probabilidadAcumulada,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de fondo de las barras
+                borderColor: 'rgba(75, 192, 192, 1)', // Color del borde de las barras
+                borderWidth: 1, // Ancho del borde de las barras
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function compararMuestraYPoblacion(numeroEventos, poblacionTotal) {
+    // Calcular el 20% de valor2
+    const porcentaje20 = 0.2 * poblacionTotal;
+    // Comparar si numeroEventos es mayor o igual al 20% de poblacionTotal
+    if (numeroEventos >= porcentaje20) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function mediaValorK(n, k, N){
+    return (n * k)/N;
+}
+
+function desviacionEstandarValorK(n, k, N){
+    const part1 = n * (k/N);
+    const part2 = (N - k)/N;
+    return Math.sqrt(part1 * part2);
+}
+
+function reiniciarValores(){
+    document.getElementById('probabilidad').append("");
+    document.getElementById('probabilidadxmayor').append("");
+    document.getElementById('probabilidadxmin').append("");
+    document.getElementById('media').append("");
+    document.getElementById('factor').append("");
+    document.getElementById('desviacion').append("");
+    document.getElementById('sesgo').append("");
+    document.getElementById('valorsesgo').append("");
+    document.getElementById('curtosis').append("");
+    document.getElementById('valorcurtosis').append("");
+    document.getElementById('valorTolerable').append("");
+    document.getElementById('avisoK').append("");
 }

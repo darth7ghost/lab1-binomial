@@ -37,20 +37,23 @@
                         </div>
                         <div class="main-content">
                             <form id="formularioBinomial">
-                                <label for="nValoresX">Ingrese nValoresX (X):</label>
+                                <label for="nValoresX">*Ingrese nValoresX (X):</label>
                                 <input type="number" id="nValoresX" name="nValoresX" required>
                             
                                 <label for="probabilidadExito">Ingrese probabilidad de éxito (p) en decimales (ej: 0.5 equivale a 50%):</label>
                                 <input type="number" step="0.01" id="probabilidadExito" name="probabilidadExito" required>
                             
-                                <label for="numeroEventos">Ingrese número de eventos (n):</label>
+                                <label for="numeroEventos">*Ingrese número de eventos (n):</label>
                                 <input type="number" id="numeroEventos" name="numeroEventos" required>
                             
-                                <label for="poblacionTotal">Ingrese población total (o 0 si es infinita):</label>
+                                <label for="poblacionTotal">*Ingrese población total (o 0 si es infinita):</label>
                                 <input type="number" id="poblacionTotal" name="poblacionTotal" required>
 
                                 <label for="maxTolerable">Ingrese un porcentaje tolerable en decimales:</label>
                                 <input type="number" step="0.01" id="maxTolerable" name="maxTolerable" required>
+
+                                <label for="valorK">Ingrese el valor de individuos objetivo si es necesario:</label>
+                                <input type="number" id="valorK" name="valorK" required>
                             
                                 <button type="button" onclick="calcularDistribucionBinomial()">Calcular</button>
                             </form>
@@ -74,14 +77,21 @@
                             <p id="probabilidad"></p>
                             <p id="probabilidadxmayor"></p>
                             <p id="probabilidadxmin"></p>
+                            <p>&nbsp;</p>
                             <p id="media"></p>
+                            <p>&nbsp;</p>
                             <p id="factor"></p>
                             <p id="desviacion"></p>
+                            <p>&nbsp;</p>
                             <p id="sesgo"></p>
                             <p id="valorsesgo"></p>
+                            <p>&nbsp;</p>
                             <p id="curtosis"></p>
                             <p id="valorcurtosis"></p>
+                            <p>&nbsp;</p>
                             <p id="valorTolerable"></p>
+                            <p>&nbsp;</p>
+                            <p id="avisoK"></p>
                         </div>
                     </div>
                 </div>
