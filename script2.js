@@ -4,6 +4,7 @@ function calcularDistribucionBinomial(){
     const probabilidadExito = parseFloat(document.getElementById('probabilidadExito').value);
     const numeroEventos = parseInt(document.getElementById('numeroEventos').value);
     const poblacionTotal = parseInt(document.getElementById('poblacionTotal').value);
+    const mediaOpcional = parseFloat(document.getElementById('mediaOpcional').value);
     const maxTolerable = parseFloat(document.getElementById('maxTolerable').value);
     const valorK = parseInt(document.getElementById('valorK').value);
 
@@ -23,16 +24,29 @@ function calcularDistribucionBinomial(){
     */
     if(isNaN(probabilidadExito)){
         if(isNaN(valorK)){
-            alert('Por favor, ingrese un valor en población objetivo para realizar la solución hipergeométrica.');
-            return;
+            //alert('Por favor, ingrese un valor en población objetivo para realizar la solución hipergeométrica.');
+            //return;
+            if (!isNaN(mediaOpcional)){
+                if(mediaOpcional < 10){
+                    const probabilidad = mediaOpcional / numeroEventos;
+                    solucionBinomialInfinita(nValoresX, probabilidad, numeroEventos, poblacionTotal, maxTolerable, valorK);
+                    distribucionPoisson(mediaOpcional, nValoresX);
+                    console.log("Tomo esta opcion donde no hay media opcional línea 1");
+                }else{
+                    alert('La media no cumple con los requisitos para resolverse por distribución de Poisson.');
+                    console.log("Tomo esta opcion dalerta");
+                }
+            }
         } else {
             const porcentaje20 = compararMuestraYPoblacion(numeroEventos, poblacionTotal);
             if(porcentaje20 === true){
                 solucionHipergeometrica(nValoresX, numeroEventos, poblacionTotal, valorK);
+                console.log("Tomo esta opcion hipergeometrica");
             } else {
                 alert('La población objetivo no cumple con los requisitos para resolverse por hipergeométrica, se resolverá por probabilidad binomial en su caso.');
                 const probabilidad = valorK / poblacionTotal;
                 solucionBinomialFinita(nValoresX, probabilidad, numeroEventos, poblacionTotal, maxTolerable, valorK);
+                console.log("Tomo esta opcion hipergeometrica binomial");
             }
         }
     } else {
@@ -41,8 +55,10 @@ function calcularDistribucionBinomial(){
         const esPoblacionInfinita = evaluarPoblacionInfinita(numeroEventos, poblacionTotal);
         if (esPoblacionInfinita) {
             solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+            console.log("Tomo esta opcion infinita");
         } else {
             solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable, valorK);
+            console.log("Tomo esta opcion finita");
         }
     }
 
@@ -51,7 +67,11 @@ function calcularDistribucionBinomial(){
     */
     if(!isNaN(probabilidadExito) && probabilidadExito <= 0.10){
         const media = numeroEventos * probabilidadExito;
-        distribucionPoisson(media, nValoresX);
+        console.log(media);
+        if(media < 10){
+            distribucionPoisson(media, nValoresX);
+            console.log("Tomo esta opcion poisson");
+        }
     }
 }
 
