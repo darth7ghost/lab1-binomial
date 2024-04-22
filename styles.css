@@ -130,6 +130,52 @@ canvas{
     color: white;
 }
 
+#tabla-n {
+    font-family: 'Baloo Bhaijaan 2', cursive;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tabla-n td, #tabla-n th {
+    border: 1px solid var(--thirdColor);
+    padding: 0px 4px;
+}
+
+#tabla-n tr:nth-child(odd){background-color: #EDEDED;}
+
+#tabla-n tr:nth-child(even){background-color: #f2f2f2;}
+
+#tabla-n tr:hover {background-color: #bab7c1;}
+
+#tabla-n th {
+    text-align: left;
+    background-color: var(--borderColor);
+    color: white;
+}
+
+#tabla-hipergeometrica {
+    font-family: 'Baloo Bhaijaan 2', cursive;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tabla-hipergeometrica td, #tabla-n th {
+    border: 1px solid var(--thirdColor);
+    padding: 0px 4px;
+}
+
+#tabla-hipergeometrica tr:nth-child(odd){background-color: #EDEDED;}
+
+#tabla-hipergeometrica tr:nth-child(even){background-color: #f2f2f2;}
+
+#tabla-hipergeometrica tr:hover {background-color: #bab7c1;}
+
+#tabla-hipergeometrica th {
+    text-align: left;
+    background-color: var(--borderColor);
+    color: white;
+}
+
 .s1{
     overflow: auto;
 }

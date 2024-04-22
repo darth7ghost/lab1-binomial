@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hipergeométrica</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+</head>
+<body>
+    <section class="s1">
+        <div class="main-container">
+            <div class="greeting-wrapper">
+                <h1>Hipergeométrica</h1>
+            </div>
+            <div class="s2">
+                <div class="left-column">
+                    <div class="intro-wrapper">
+                        <div class="nav-wrapper">
+                            <div class="dots-wrapper">
+                                <div id="dot-1" class="browser-dot"></div>
+                                <div id="dot-2" class="browser-dot"></div>
+                                <div id="dot-3" class="browser-dot"></div>
+                            </div>
+                            <ul id="navigation">
+                                <li><a href="#"></a></li>
+                            </ul>
+                        </div>
+                        <div class="main-content">
+                            <form id="formularioColas">
+                                <label for="nValoresX">*Ingrese nValoresX (X):</label>
+                                <input type="number" id="nValoresX" name="nValoresX" required>
+                            
+                                <label for="numeroEventos">*Ingrese muestra (n):</label>
+                                <input type="number" id="numeroEventos" name="numeroEventos" required>
+
+                                <label for="exitos">*Ingrese número total de éxitos de población (T):</label>
+                                <input type="number" id="exitos" name="exitos" required>
+                            
+                                <label for="poblacionTotal">*Ingrese población total:</label>
+                                <input type="number" id="poblacionTotal" name="poblacionTotal" required>
+                            
+                                <button type="button" onclick="calcularDistribucionHipergeometrica()">Calcular</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="intro-wrapper">
+                        <div class="nav-wrapper">
+                            <div class="dots-wrapper">
+                                <div id="dot-1" class="browser-dot"></div>
+                                <div id="dot-2" class="browser-dot"></div>
+                                <div id="dot-3" class="browser-dot"></div>
+                            </div>
+                            <ul id="navigation">
+                                <li><a href="#"></a></li>
+                            </ul>
+                        </div>
+                        <div class="main-content">
+                            <h3 id="ctitle"></h3>
+                            <p id="pexitos"></p>
+                            <p>&nbsp;</p>
+                            <p id="pexitosX"></p>
+                            <p id="probabilidadpoisson"></p>
+                            <p>&nbsp;</p>
+                            <p id="media"></p>
+                            <p>&nbsp;</p>
+                            <p id="desviacion"></p>
+                            <p>&nbsp;</p>
+                            <p id="sesgo"></p>
+                            <p id="valorsesgo"></p>
+                            <p>&nbsp;</p>
+                            <p id="curtosis"></p>
+                            <p id="valorcurtosis"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISTRIBUCION BINOMIAL PARA N CLIENTES -->
+        <div class="s2">
+            <div class="left-column">
+                <div class="intro-wrapper">
+                    <div class="main-content">
+                        <h3 id="ttitle"></h3>
+                        <table id="tabla-hipergeometrica">
+                            <thead>
+                                <tr>
+                                    <th>n</th>
+                                    <th>P(n)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaBody">
+                              <!-- Aquí se agregarán las filas dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="intro-wrapper">
+                    <div class="main-content">
+                        <h3 id="gtitle"></h3>
+                            <canvas id="probabilidadChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <h3>Mis datos:</h3>
+        <p>&#128100; 201943148 - Oscar Anibal Sierra Chocooj</p>
+        <p>&#128187; Ingeniería en Ciencias y Sistemas</p>
+        <p>&#127976; Universidad de San Carlos de Guatemala - CUNOR.</p>
+        <p>&#128194; Para ver todos mis códigos fuente puedes dirigirte a mi repositorio de GitHub: <a target="_blank" href="https://github.com/darth7ghost"> @darth7ghost</a></p>
+    </footer>
+    <script src="../scripts/hipergeometrica.js"></script>
+</body>
+</html>
