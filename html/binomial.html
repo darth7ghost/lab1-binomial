@@ -16,12 +16,8 @@
     <section class="s1">
         <div class="main-container">
             <div class="greeting-wrapper">
-                <h1>PROYECTO DE MODELOS DISCRETOS Y CONTINUOS</h1>
+                <h1>Distribución Binomial</h1>
             </div>
-            <h3>¿Cómo funciona?</h3>
-            <p>El programa permite calcular la probabilidad de n valores de X aplicando la distribución binomial y toma en consideración si la población es infinita para el cálculo de las probabilidades.
-                También permite calcular la media y la desviación estándar para la población infinita.
-            </p>
             <div class="s2">
                 <div class="left-column">
                     <div class="intro-wrapper">
@@ -37,6 +33,9 @@
                         </div>
                         <div class="main-content">
                             <form id="formularioBinomial">
+                                <label for="nValoresX">Ingrese un rango de inicio para la probabilidad (X):</label>
+                                <input type="number" id="nValoresXmin" name="nValoresXmin" required>
+
                                 <label for="nValoresX">*Ingrese nValoresX (X):</label>
                                 <input type="number" id="nValoresX" name="nValoresX" required>
                             
@@ -54,6 +53,11 @@
                             
                                 <button type="button" onclick="calcularDistribucionBinomial()">Calcular</button>
                             </form>
+                            <br>
+                            <br>
+                            <input type="file" id="inventarioInput" accept=".json">
+                            <input type="file" id="simulacionInput" accept=".json">
+                            <div id="selectContainer"></div>
                         </div>
                     </div>
                 </div>
@@ -105,6 +109,7 @@
                             <table id="tabla-probabilidad">
                                 <thead>
                                     <tr>
+                                        <th>No.</th>
                                         <th>X</th>
                                         <th>P(X)</th>
                                         <th>Acumulada</th>
@@ -146,6 +151,7 @@
                             <table id="tabla-poisson">
                                 <thead>
                                     <tr>
+                                        <th>No.</th>
                                         <th>X</th>
                                         <th>P(X)</th>
                                     </tr>
@@ -176,6 +182,5 @@
         <p>&#128194; Para ver todos mis códigos fuente puedes dirigirte a mi repositorio de GitHub: <a target="_blank" href="https://github.com/darth7ghost"> @darth7ghost</a></p>
     </footer>
     <script src="../scripts/binomial.js"></script>
-
 </body>
 </html>

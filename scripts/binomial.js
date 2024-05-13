@@ -1,5 +1,6 @@
 function calcularDistribucionBinomial(){
     // Obtener los valores ingresados por el usuario
+    const nValoresXmin = parseInt(document.getElementById('nValoresXmin').value);
     const nValoresX = parseInt(document.getElementById('nValoresX').value);
     const probabilidadExito = parseFloat(document.getElementById('probabilidadExito').value);
     const numeroEventos = parseInt(document.getElementById('numeroEventos').value);
@@ -14,10 +15,17 @@ function calcularDistribucionBinomial(){
     //Solucion probabilidad binomial
     // Lógica para evaluar si la población es infinita
     const esPoblacionInfinita = evaluarPoblacionInfinita(numeroEventos, poblacionTotal);
-    if (esPoblacionInfinita) {
-        solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable);
+    if (esPoblacionInfinita === true) {
+        solucionBinomialInfinita(nValoresXmin, nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable);
     } else {
-        solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable);
+        if(evaluarPorcentajePoblacion(numeroEventos, poblacionTotal) === true){
+            const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
+            const nt = probabilidad * poblacionTotal;
+            alert('Estos datos deben resolverse con probabilidad Hipergeométrica. Debe dirigirse al formulario de probabilidad hipergeométrica e introducir los valores:\nValores de inicio X: '
+             + nValoresXmin + '\nValores X: ' + nValoresX + '\nMuestra: ' + numeroEventos + '\nNumero de éxitos T: ' + nt.toFixed(2) + '\nPoblación total: ' + poblacionTotal);
+        } else {
+            solucionBinomialFinita(nValoresXmin, nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable);
+        }
     }
 }
 
@@ -36,40 +44,50 @@ function reiniciarValores(){
     document.getElementById('avisoK').append("");
 }
 
-function solucionBinomialInfinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable){
+function evaluarPorcentajePoblacion(numeroEventos, poblacionTotal){
+    const porcentaje = 0.2 * poblacionTotal;
+
+    if (numeroEventos >= porcentaje) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function solucionBinomialInfinita(nValoresXmin, nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable){
     const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
-    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
+    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(8)}`;
     const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
     document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
     //------------ POISSON ----------------
     if(probabilidad < 0.10 && media < 10){
         probabilidadpoisson = calcularPoisson(media, nValoresX);
-        document.getElementById('probabilidadpoisson').innerText = `Probabilidad de Poisson para X valores: ${probabilidadpoisson.toFixed(4)}`;
-        distribucionPoisson(media, nValoresX);
+        document.getElementById('probabilidadpoisson').innerText = `Probabilidad de Poisson para X valores: ${probabilidadpoisson.toFixed(8)}`;
+        distribucionPoisson(media, nValoresXmin, nValoresX);
     }
     //------------ POISSON ----------------
     const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
-    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandar.toFixed(4)}`;
+    document.getElementById('desviacion').innerText = `Desviación estándar: ${desviacionEstandar.toFixed(8)}`;
     sesgoCurtosis(numeroEventos, probabilidadExito);
     if(nValoresX === 0){
         noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable);
     } else {
-        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable);
+        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresXmin, nValoresX, maxTolerable);
     }
 }
 
-function solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable){
+function solucionBinomialFinita(nValoresXmin, nValoresX, probabilidadExito, numeroEventos, poblacionTotal, maxTolerable){
     const probabilidad = calcularProbabilidadBinomial(numeroEventos, probabilidadExito, nValoresX);
-    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(4)}`;
+    document.getElementById('probabilidad').innerText = `Probabilidad: ${probabilidad.toFixed(8)}`;
     const media = calcularMediaBinomial(numeroEventos, probabilidadExito);
     document.getElementById('media').innerText = `Media: ${media.toFixed(4)}`;
     //------------ POISSON ----------------
     if(probabilidad < 0.10 && media < 10){
         probabilidadpoisson = calcularPoisson(media, nValoresX);
-        document.getElementById('probabilidadpoisson').innerText = `Media: ${probabilidadpoisson.toFixed(4)}`;
-        distribucionPoisson(media, nValoresX);
+        document.getElementById('probabilidadpoisson').innerText = `Probabilidad de Poisson para X valores: ${probabilidadpoisson.toFixed(8)}`;
+        distribucionPoisson(media, nValoresXmin, nValoresX);
     }
-    //------------ POISSON ----------------
+    //-------------------------------------
     const factor = factorCorreccion(numeroEventos, poblacionTotal);
     document.getElementById('factor').innerText = `Factor de correción: ${factor.toFixed(4)}`;
     const desviacionEstandar = calcularDesviacionEstandarBinomial(numeroEventos, probabilidadExito);
@@ -79,7 +97,7 @@ function solucionBinomialFinita(nValoresX, probabilidadExito, numeroEventos, pob
     if(nValoresX === 0){
         noExisteX(probabilidad, probabilidadExito, numeroEventos, maxTolerable);
     } else {
-        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable);
+        existeX(probabilidad, probabilidadExito, numeroEventos, nValoresXmin, nValoresX, maxTolerable);
     }
 }
 
@@ -94,30 +112,43 @@ function sesgoCurtosis(numeroEventos, probabilidadExito){
     document.getElementById('valorcurtosis').innerText = `➥ Tipo de curtósis: ${valorCurtosis}`;
 }
 
-function existeX(probabilidad, probabilidadExito, numeroEventos, nValoresX, maxTolerable){
+function existeX(probabilidad, probabilidadExito, numeroEventos, nValoresXmin, nValoresX, maxTolerable){
     const probabilidadAcumulada = [];
     const porcentaje = [];
+    const numerosX = [];
+    const nresultados = [];
     const probabilidadXmin = 1 - probabilidad;
-    document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(4)}`;
+    document.getElementById('probabilidadxmin').innerText = `➥ Probabilidad >X: ${probabilidadXmin.toFixed(8)}`;
     document.getElementById('pxtitle').innerText = "Probabilidad P(X):";
     document.getElementById('pacumuladatitle').innerText = "Probabilidad acumulada P(X):";
     //Tabla para probabilidad de P segun el numero de valores de x.
     const resultados = calcularProbabilidadesBinomialesConX(numeroEventos, probabilidadExito, nValoresX);
-    graficaBinomialConX(nValoresX, resultados);
+    graficaBinomialConX(nValoresXmin, nValoresX, resultados);
     //Calculo de probabilidad de x maximo, x acumulada y el porcentaje
     let probabilidadXmayor = 0;
-    for (var i = 0; i < resultados.length; i+=1) {
+    let nval= 0;
+    if(isNaN(nValoresXmin)){
+        nval = 0;
+    } else {
+        nval = nValoresXmin;
+    }
+    for (var i = 0; i <= nValoresX; i++) {
         probabilidadXmayor = probabilidadXmayor + resultados[i];
         let porcentajeTemp = probabilidadXmayor * 100;
-        probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
-        porcentaje.push(porcentajeTemp.toFixed(2));
+        if(i >= nval){
+            probabilidadAcumulada.push(probabilidadXmayor.toFixed(8));
+            porcentaje.push(porcentajeTemp.toFixed(2));
+            numerosX.push(i);
+            nresultados.push(resultados[i]);
+        }
     }
+
     //Tabla de probabilidades
-    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(4)}`;
+    document.getElementById('probabilidadxmayor').innerText = `➥ Probabilidad <X: ${probabilidadXmayor.toFixed(8)}`;
     document.getElementById('tbtitle').innerText = "Tabla de probabilidad acumulada:";
-    tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje);
+    tablaProbabilidadAcumulada(numerosX, nresultados, probabilidadAcumulada, porcentaje);
     //Grafica de probabilidad acumulada
-    graficaProbabilidadAcumulada(nValoresX, probabilidadAcumulada);
+    graficaProbabilidadAcumulada(nValoresXmin, nValoresX, probabilidadAcumulada);
 
     let indiceSolucion = 0;
     let indicadorSolucion = 0;
@@ -298,12 +329,18 @@ function graficaBinomialSinX(numeroEventos, resultados){
     });
 }
 
-function graficaBinomialConX(nValoresX, resultados){
+function graficaBinomialConX(nValoresXmin, nValoresX, resultados){
+    let  nval= 0;
+    if(isNaN(nValoresXmin)){
+        nval = 0;
+    } else {
+        nval = nValoresXmin;
+    }
     const ctx = document.getElementById('probabilidadBinomialChart').getContext('2d');
     const probabilidadBinomialChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: Array.from({ length: nValoresX + 1 }, (_, i) => i), // Etiquetas para cada valor de X
+            labels: Array.from({ length: nValoresX - nval + 1 }, (_, i) => i + nval), // Etiquetas para cada valor de X
             datasets: [{
                 label: 'Probabilidad Binomial',
                 data: resultados,
@@ -322,42 +359,54 @@ function graficaBinomialConX(nValoresX, resultados){
     });
 }
 
-function tablaProbabilidadAcumulada(resultados, probabilidadAcumulada, porcentaje){
+function tablaProbabilidadAcumulada(numerosX, resultados, probabilidadAcumulada, porcentaje){
     const tablaBody = document.getElementById('tablaBody');
     if (resultados.length === probabilidadAcumulada.length) {
+        let j = 0;
         // Recorre los arrays y agrega filas a la tabla
-        for (let i = 0; i < resultados.length; i++) {
+        for (let i = 1; i <= resultados.length; i++) {
             const fila = document.createElement('tr');
             // Añade la celda de índice
             const celdaIndice = document.createElement('td');
             celdaIndice.textContent = i;
             fila.appendChild(celdaIndice);
             // Añade la celda de array1
+            const celdaArrayX = document.createElement('td');
+            celdaArrayX.textContent = numerosX[j];
+            fila.appendChild(celdaArrayX);
+            // Añade la celda de array1
             const celdaArray1 = document.createElement('td');
-            celdaArray1.textContent = resultados[i];
+            celdaArray1.textContent = resultados[j];
             fila.appendChild(celdaArray1);
             // Añade la celda de array2
             const celdaArray2 = document.createElement('td');
-            celdaArray2.textContent = probabilidadAcumulada[i];
+            celdaArray2.textContent = probabilidadAcumulada[j];
             fila.appendChild(celdaArray2);
             // Añade la celda de porcentaje
             const celdaArray3 = document.createElement('td');
-            celdaArray3.textContent = porcentaje[i];
+            celdaArray3.textContent = porcentaje[j];
             fila.appendChild(celdaArray3);
             // Agrega la fila a la tabla
             tablaBody.appendChild(fila);
+            j = j + 1;
         }
     } else {
         console.error('Los arrays no tienen la misma longitud');
     }
 }
 
-function graficaProbabilidadAcumulada(numeroEventos, probabilidadAcumulada){
+function graficaProbabilidadAcumulada(nValoresXmin, numeroEventos, probabilidadAcumulada){
+    let  nval= 0;
+    if(isNaN(nValoresXmin)){
+        nval = 0;
+    } else {
+        nval = nValoresXmin;
+    }
     const ctx2 = document.getElementById('probabilidadAcumuladaChart').getContext('2d');
     const probabilidadAcumuladaChart = new Chart(ctx2, {
         type: 'bar',
         data: {
-            labels: Array.from({ length: numeroEventos + 1 }, (_, i) => i), // Etiquetas para cada valor de X
+            labels: Array.from({ length: numeroEventos - nval + 1 }, (_, i) => i + nval), // Etiquetas para cada valor de X
             datasets: [{
                 label: 'Probabilidad Binomial',
                 data: probabilidadAcumulada,
@@ -399,17 +448,27 @@ function factorial(n) {
 }
 
 //Lista de valores de probabilidad de Poisson segun numero de exitos
-function distribucionPoisson(media, k){
+function distribucionPoisson(media, nValoresXmin, k){
     const listaPoisson = [];
-    for (let x = 0; x <= k; x++) {
-        listaPoisson.push(calcularPoisson(media, x));
+    const numerosX = [];
+    let nval= 0;
+    if(isNaN(nValoresXmin)){
+        nval = 0;
+    } else {
+        nval = nValoresXmin;
     }
-    tablaPoisson(listaPoisson);
-    graficaPoisson(listaPoisson, k);
+    for (let x = 0; x <= k; x++) {
+        if(x >= nval){
+            listaPoisson.push(calcularPoisson(media, x));
+            numerosX.push(x);
+        }
+    }
+    tablaPoisson(listaPoisson, numerosX);
+    graficaPoisson(listaPoisson, nval, k);
 }
 
 //Tabla de Poisson
-function tablaPoisson(listaPoisson){
+function tablaPoisson(listaPoisson, numerosX){
     document.getElementById('tptitle').innerText = "Tabla de distribución de Poisson:";
     const tablaPoissonBody = document.getElementById('tablaPoissonBody');
     // Recorre los arrays y agrega filas a la tabla
@@ -420,6 +479,10 @@ function tablaPoisson(listaPoisson){
         celdaIndice.textContent = i;
         fila.appendChild(celdaIndice);
         // Añade la celda de array1
+        const celdaArrayX = document.createElement('td');
+        celdaArrayX.textContent = numerosX[i];
+        fila.appendChild(celdaArrayX);
+        // Añade la celda de array1
         const celdaArray1 = document.createElement('td');
         celdaArray1.textContent = listaPoisson[i];
         fila.appendChild(celdaArray1);
@@ -428,13 +491,13 @@ function tablaPoisson(listaPoisson){
     }
 }
 
-function graficaPoisson(listaPoisson, nValoresX){
+function graficaPoisson(listaPoisson, nValoresXmin, nValoresX){
     document.getElementById('ppoissontitle').innerText = "Gráfica de distribución de Poisson:";
     const ctx = document.getElementById('distribucionPoissonChart').getContext('2d');
     const distribucionPoissonChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: Array.from({ length: nValoresX + 1 }, (_, i) => i), // Etiquetas para cada valor de X
+            labels: Array.from({ length: nValoresX - nValoresXmin + 1 }, (_, i) => i + nValoresXmin), // Etiquetas para cada valor de X
             datasets: [{
                 label: 'Distribución de Poisson',
                 data: listaPoisson,
@@ -452,3 +515,73 @@ function graficaPoisson(listaPoisson, nValoresX){
         }
     });
 }
+
+function loadJSONFile(file, callback) {
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        const jsonData = JSON.parse(event.target.result);
+        callback(jsonData);
+    };
+
+    reader.readAsText(file);
+}
+
+let simulacionFile;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Escuchar el evento de cambio en los elementos de entrada de archivo
+    document.getElementById('inventarioInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+
+        // Verificar si el archivo cargado es el inventario.json
+        if (file.name === 'inventario.json') {
+            loadJSONFile(file, function(inventario) {
+                // Crear el desplegable con los objetos del inventario
+                const selectElement = document.createElement('select');
+                inventario.forEach(producto => {
+                    const option = document.createElement('option');
+                    option.text = producto.nombre;
+                    selectElement.appendChild(option);
+                });
+
+                // Agregar el desplegable al contenedor en el HTML
+                const selectContainer = document.getElementById('selectContainer');
+                selectContainer.innerHTML = ''; // Limpiar el contenedor
+                selectContainer.appendChild(selectElement);
+
+                // Escuchar el evento de cambio en el desplegable
+                selectElement.addEventListener('change', function() {
+                    const selectedProduct = inventario.find(producto => producto.nombre === selectElement.value);
+
+                    // Verificar si se ha cargado el archivo simulacion.json
+                    if (simulacionFile) {
+                        // Leer el archivo simulacion.json para contar cuántos objetos posee
+                        const totalEventos = simulacionFile.length;
+                        document.getElementById('poblacionTotal').value = totalEventos;
+
+                        // Contar cuántos artículos existen en simulacion.json que sean iguales al seleccionado
+                        const numEventosSimilares = simulacionFile.filter(item => item.nombre === selectedProduct.nombre).length;
+                        document.getElementById('numeroEventos').value = numEventosSimilares;
+
+                        // Calcular la probabilidad de éxito (p)
+                        const p = numEventosSimilares / totalEventos;
+                        document.getElementById('probabilidadExito').value = p.toFixed(2); // Redondear a dos decimales
+                    } else {
+                        console.error('El archivo simulacion.json no se ha cargado.');
+                    }
+                });
+            });
+        }
+    });
+
+    // Escuchar el evento de cambio para el otro archivo .json (simulacion.json)
+    document.getElementById('simulacionInput').addEventListener('change', function(event) {
+        // Leer el archivo simulacion.json
+        const file = event.target.files[0];
+        loadJSONFile(file, function(simulacion) {
+            // Guardar el archivo simulacion.json para acceder a él cuando se seleccione un producto del inventario
+            simulacionFile = simulacion;
+        });
+    });
+});

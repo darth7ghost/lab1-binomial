@@ -16,7 +16,7 @@
     <section class="s1">
         <div class="main-container">
             <div class="greeting-wrapper">
-                <h1>Hipergeométrica</h1>
+                <h1>Distribución Hipergeométrica</h1>
             </div>
             <div class="s2">
                 <div class="left-column">
@@ -33,6 +33,9 @@
                         </div>
                         <div class="main-content">
                             <form id="formularioColas">
+                                <label for="nValoresX">Ingrese un rango de inicio para valores de X (X):</label>
+                                <input type="number" id="exitosmin" name="exitosmin" required>
+
                                 <label for="nValoresX">*Ingrese nValoresX (X):</label>
                                 <input type="number" id="nValoresX" name="nValoresX" required>
                             
@@ -47,6 +50,11 @@
                             
                                 <button type="button" onclick="calcularDistribucionHipergeometrica()">Calcular</button>
                             </form>
+                            <br>
+                            <br>
+                            <input type="file" id="inventarioInput" accept=".json">
+                            <input type="file" id="simulacionInput" accept=".json">
+                            <div id="selectContainer"></div>
                         </div>
                     </div>
                 </div>
@@ -82,37 +90,71 @@
                     </div>
                 </div>
             </div>
+            <!-- DISTRIBUCION BINOMIAL PARA N CLIENTES -->
+            <div class="s2">
+                <div class="left-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content">
+                            <h3 id="ttitle"></h3>
+                            <table id="tabla-hipergeometrica">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>n</th>
+                                        <th>P(n)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaBody">
+                                <!-- Aquí se agregarán las filas dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content">
+                            <h3 id="gtitle"></h3>
+                                <canvas id="probabilidadChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- DISTRIBUCION DE POISSON -->
+            <h2>Cálculo de distribución de Poisson</h2>
+            <div class="s2">
+                <div class="left-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content">
+                            <h3 id="tptitle"></h3>
+                            <table id="tabla-poisson">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>X</th>
+                                        <th>P(X)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaPoissonBody">
+                                <!-- Aquí se agregarán las filas dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="intro-wrapper">
+                        <div class="main-content">
+                            <h3 id="ppoissontitle"></h3>
+                                <canvas id="distribucionPoissonChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- DISTRIBUCION BINOMIAL PARA N CLIENTES -->
-        <div class="s2">
-            <div class="left-column">
-                <div class="intro-wrapper">
-                    <div class="main-content">
-                        <h3 id="ttitle"></h3>
-                        <table id="tabla-hipergeometrica">
-                            <thead>
-                                <tr>
-                                    <th>n</th>
-                                    <th>P(n)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaBody">
-                              <!-- Aquí se agregarán las filas dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="right-column">
-                <div class="intro-wrapper">
-                    <div class="main-content">
-                        <h3 id="gtitle"></h3>
-                            <canvas id="probabilidadChart" width="400" height="400"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </section>
     <footer>
         <h3>Mis datos:</h3>

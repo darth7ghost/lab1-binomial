@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "nombre": "Paracetamol",
+    "precioCompra": 5.0,
+    "precioVenta": 10.0
+  },
+  {
+    "id": 2,
+    "nombre": "Ibuprofeno",
+    "precioCompra": 6.0,
+    "precioVenta": 12.0
+  },
+  {
+    "id": 3,
+    "nombre": "Vitamina C",
+    "precioCompra": 3.0,
+    "precioVenta": 7.0
+  },
+  {
+    "id": 4,
+    "nombre": "Analgésico",
+    "precioCompra": 4.0,
+    "precioVenta": 8.0
+  },
+  {
+    "id": 5,
+    "nombre": "Antibiótico",
+    "precioCompra": 10.0,
+    "precioVenta": 20.0
+  },
+  {
+    "id": 6,
+    "nombre": "Antiinflamatorio",
+    "precioCompra": 7.0,
+    "precioVenta": 15.0
+  },
+  {
+    "id": 7,
+    "nombre": "Jarabe para la tos",
+    "precioCompra": 8.0,
+    "precioVenta": 16.0
+  },
+  {
+    "id": 8,
+    "nombre": "Pastillas para la gripe",
+    "precioCompra": 9.0,
+    "precioVenta": 18.0
+  },
+  {
+    "id": 9,
+    "nombre": "Colirio",
+    "precioCompra": 6.0,
+    "precioVenta": 12.0
+  },
+  {
+    "id": 10,
+    "nombre": "Antiséptico",
+    "precioCompra": 5.0,
+    "precioVenta": 11.0
+  },
+  {
+    "id": 11,
+    "nombre": "Crema antiarrugas",
+    "precioCompra": 15.0,
+    "precioVenta": 30.0
+  },
+  {
+    "id": 12,
+    "nombre": "Protector solar",
+    "precioCompra": 12.0,
+    "precioVenta": 25.0
+  },
+  {
+    "id": 13,
+    "nombre": "Loción hidratante",
+    "precioCompra": 8.0,
+    "precioVenta": 18.0
+  },
+  {
+    "id": 14,
+    "nombre": "Shampoo anticaspa",
+    "precioCompra": 7.0,
+    "precioVenta": 14.0
+  },
+  {
+    "id": 15,
+    "nombre": "Desodorante",
+    "precioCompra": 4.0,
+    "precioVenta": 9.0
+  },
+  {
+    "id": 16,
+    "nombre": "Cepillo dental",
+    "precioCompra": 2.0,
+    "precioVenta": 5.0
+  },
+  {
+    "id": 17,
+    "nombre": "Pasta dental",
+    "precioCompra": 3.0,
+    "precioVenta": 6.0
+  },
+  {
+    "id": 18,
+    "nombre": "Enjuague bucal",
+    "precioCompra": 4.0,
+    "precioVenta": 8.0
+  },
+  {
+    "id": 19,
+    "nombre": "Gasas estériles",
+    "precioCompra": 6.0,
+    "precioVenta": 12.0
+  },
+  {
+    "id": 20,
+    "nombre": "Vendas elásticas",
+    "precioCompra": 7.0,
+    "precioVenta": 15.0
+  },
+  {
+    "id": 21,
+    "nombre": "Algodón",
+    "precioCompra": 3.0,
+    "precioVenta": 7.0
+  },
+  {
+    "id": 22,
+    "nombre": "Termómetro digital",
+    "precioCompra": 10.0,
+    "precioVenta": 20.0
+  },
+  {
+    "id": 23,
+    "nombre": "Tijeras quirúrgicas",
+    "precioCompra": 15.0,
+    "precioVenta": 30.0
+  },
+  {
+    "id": 24,
+    "nombre": "Guantes desechables",
+    "precioCompra": 8.0,
+    "precioVenta": 16.0
+  },
+  {
+    "id": 25,
+    "nombre": "Mascarillas",
+    "precioCompra": 5.0,
+    "precioVenta": 11.0
+  },
+  {
+    "id": 26,
+    "nombre": "Jeringas",
+    "precioCompra": 7.0,
+    "precioVenta": 15.0
+  },
+  {
+    "id": 27,
+    "nombre": "Alcohol en gel",
+    "precioCompra": 6.0,
+    "precioVenta": 13.0
+  },
+  {
+    "id": 28,
+    "nombre": "Pomada cicatrizante",
+    "precioCompra": 9.0,
+    "precioVenta": 19.0
+  },
+  {
+    "id": 29,
+    "nombre": "Suplemento vitamínico",
+    "precioCompra": 12.0,
+    "precioVenta": 25.0
+  },
+  {
+    "id": 30,
+    "nombre": "Gotas oftálmicas",
+    "precioCompra": 8.0,
+    "precioVenta": 17.0
+  }
+]
